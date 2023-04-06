@@ -2,8 +2,10 @@ package com.shailendra.spring6webapp.bootstrap;
 
 import com.shailendra.spring6webapp.domain.Author;
 import com.shailendra.spring6webapp.domain.Book;
+import com.shailendra.spring6webapp.domain.Publisher;
 import com.shailendra.spring6webapp.repositories.AuthorRepository;
 import com.shailendra.spring6webapp.repositories.BookRepository;
+import com.shailendra.spring6webapp.repositories.PublisherRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +14,12 @@ public class BootstrapData implements CommandLineRunner {
 
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
+    private final PublisherRepository publisherRepository;
 
-    public BootstrapData(AuthorRepository authorRepository, BookRepository bookRepository) {
+    public BootstrapData(AuthorRepository authorRepository, BookRepository bookRepository, PublisherRepository publisherRepository) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
+        this.publisherRepository = publisherRepository;
     }
 
     @Override
@@ -44,13 +48,33 @@ public class BootstrapData implements CommandLineRunner {
 
         savedAuthor.getBooks().add(savedBook);
         rodSaved.getBooks().add(noEJBSaved);
+        savedBook.getAuthors().add(savedAuthor);
+        noEJBSaved.getAuthors().add(rodSaved);
+
+        Publisher  publisher = new Publisher();
+        publisher.setPublisherName("Penguin");
+        publisher.setAddress("Flat no1");
+        publisher.setCity("Pune");
+        publisher.setState("Maharashtra");
+        publisher.setZip("12345");
+        publisherRepository.save(publisher);
+
+        savedBook.setPublisher(publisher);
+        noEJBSaved.setPublisher(publisher);
 
         authorRepository.save(savedAuthor);
         authorRepository.save(rodSaved);
+        bookRepository.save(savedBook);
+        bookRepository.save(noEJBSaved);
+
+
+
+
 
         System.out.println("In Bootstrap data: ");
         System.out.println("Author count :" + authorRepository.count());
         System.out.println("Book count :" + bookRepository.count());
+        System.out.println("Publisher count :" + publisherRepository.count());
     }
 
 }
